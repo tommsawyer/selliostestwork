@@ -1,0 +1,16 @@
+html
+    head
+        title!= Города
+    body
+        table
+            thead
+                tr
+                    td Адрес
+                    td Широта
+                    td Долгота
+            tbody
+                each city in cities
+                    tr
+                        td= city.address
+                        td= city.latitude
+                        td= city.longitude
