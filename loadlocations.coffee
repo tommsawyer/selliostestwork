@@ -20,28 +20,30 @@ loadLocationCoordinates = (address) ->
 module.exports = () ->
     console.log 'Загружаю города'
     loadedLocations = []
-
+    loadedAddresses = []
+    
     getLocations().then (addresses) ->
+        loadedAddresses = addresses
         console.log "Загрузил города. Адреса: \n #{JSON.stringify(addresses)}"
         console.log 'Ищу их в монге'
+        mongo.findLocations(addresses)
+    .then (locations) ->
+        console.log "Нашел следующие записи: #{JSON.stringify(locations)}"
 
-        mongo.findLocations(addresses).then (locations) ->
-            console.log "Нашел следующие записи: #{JSON.stringify(locations)}"
+        loadedAddresses.reduce (result, address, index) ->
+            location = locations.find (element) ->
+                element.address == address
 
-            promises = addresses.reduce (result, address, index) ->
-                location = locations.find (element) ->
-                    element.address == address
-
-                if (location)
+            if (location)
+                loadedLocations[index] = location
+            else
+                console.log "Города #{address} в бд нет. Ищу для него координаты и сохраняю"
+                result.push(loadLocationCoordinates(address).then (location) ->
                     loadedLocations[index] = location
-                else
-                    console.log "Города #{address} в бд нет. Ищу для него координаты и сохраняю"
-                    result.push(loadLocationCoordinates(address).then (location) ->
-                        loadedLocations[index] = location
-                    )
+                )
 
-                return result
-            , []
-
-            Q.all(promises).then () ->
-                loadedLocations
+            return result
+        , []
+    .then Q.all
+    .then () ->
+        loadedLocations
