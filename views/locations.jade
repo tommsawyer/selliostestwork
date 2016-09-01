@@ -1,6 +1,6 @@
 html
     head
-        title!= Города
+        title Места
     body
         table
             thead
@@ -9,8 +9,8 @@ html
                     td Широта
                     td Долгота
             tbody
-                each city in cities
+                each location in locations
                     tr
-                        td= city.address
-                        td= city.latitude
-                        td= city.longitude
+                        td= location.address
+                        td= location.latitude
+                        td= location.longitude

@@ -6,12 +6,12 @@ class Server
         app.set 'view engine', 'jade'
        
     loadRoutes: () ->
-        cities = @cities
+        locations = @locations
         app.get '/', (req, res) ->
-            res.render 'cities', {cities}
+            res.render 'locations', {locations}
 
-    setCities: (cities) ->
-        @cities = cities
+    setLocations: (locations) ->
+        @locations = locations
 
     start: () ->
         app.listen 3000, () ->

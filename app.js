@@ -1,11 +1,11 @@
 require('coffee-script/register');
 
 var Server = require('./server.coffee');
-var loadCities = require('./loadcities.coffee');
+var loadLocations = require('./loadlocations.coffee');
 
-loadCities().then(function(cities) {
+loadLocations().then(function(locations) {
     var server = new Server();
-    server.setCities(cities);
+    server.setLocations(locations);
     server.loadRoutes();
     server.start();
 });
