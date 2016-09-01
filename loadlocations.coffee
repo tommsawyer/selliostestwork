@@ -3,9 +3,8 @@ getCoordinates = require "./lib/geocoding"
 mongo          = require "./lib/locationModel"
 Q              = require "q"
 
-loadedLocations = []
 
-loadLocationCoordinates = (address, index) ->
+loadLocationCoordinates = (address) ->
     getCoordinates(address).then (coords) ->
         console.log "Получил координаты для адреса: #{address}  --> #{JSON.stringify(coords)}"
 
@@ -16,11 +15,11 @@ loadLocationCoordinates = (address, index) ->
         }
 
         mongo.saveLocation location
-        loadedLocations[index] = location
-        address
+        location
 
 module.exports = () ->
     console.log 'Загружаю города'
+    loadedLocations = []
 
     getLocations().then (addresses) ->
         console.log "Загрузил города. Адреса: \n #{JSON.stringify(addresses)}"
@@ -37,7 +36,9 @@ module.exports = () ->
                     loadedLocations[index] = location
                 else
                     console.log "Города #{address} в бд нет. Ищу для него координаты и сохраняю"
-                    result.push(loadLocationCoordinates(address, index))
+                    result.push(loadLocationCoordinates(address).then (location) ->
+                        loadedLocations[index] = location
+                    )
 
                 return result
             , []
